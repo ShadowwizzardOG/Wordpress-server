@@ -1,0 +1,19 @@
+---
+- name: Update Proxmox VE Repositories
+  hosts: all
+  tasks:
+    - name: Update /etc/apt/sources.list
+      lineinfile:
+        path: /etc/apt/sources.list
+        line: "deb http://download.proxmox.com/debian/pve bookworm pve-no-subscription"
+        state: present
+        create: yes
+
+    - name: Update enterprise file
+      lineinfile:
+        path: /etc/apt/sources.list.d/pve-enterprise.list
+        regexp: "^deb"
+        line: "#{{ item }}"
+      loop:
+        - "deb http://example.com/repo enterprise"
+        - "deb http://example.com/repo another"
