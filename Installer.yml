@@ -1,0 +1,23 @@
+---
+- name: Installeer Python, Pip en Proxmoxer met apt en pip
+  hosts: all
+  become: yes  # Gebruik sudo om als beheerder te worden uitgevoerd (vereist sudo-rechten)
+  tasks:
+    - name: Update pakketlijst
+      apt:
+        update_cache: yes
+
+    - name: Installeer Python
+      apt:
+        name: python
+        state: present
+
+    - name: Installeer Pip
+      apt:
+        name: python-pip
+        state: present
+
+    - name: Installeer Proxmoxer
+      pip:
+        name: proxmoxer
+        state: present
