@@ -1,0 +1,16 @@
+---
+- name: Add user to Proxmox server
+  hosts: proxmox
+  become: yes
+  tasks:
+    - name: Create user 'mannetje'
+      user:
+        name: mannetje
+        state: present
+        password: "{{ 'school' | password_hash('sha512') }}"
+
+    - name: Create user 'mannetje'
+      user:
+        name: michael
+        state: present
+        password: "{{ 'school' | password_hash('sha512') }}"
