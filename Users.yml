@@ -1,0 +1,58 @@
+---
+- name: Create users with SSH keys
+  hosts: proxmox
+  become: yes
+  tasks:
+    - name: Create user 'pieter'
+      user:
+        name: pieter
+        state: present
+      become_user: root
+
+    - name: Create .ssh directory for 'pieter'
+      file:
+        path: /home/pieter/.ssh
+        state: directory
+        owner: pieter
+        group: pieter
+        mode: '0700'
+
+    - name: Generate SSH keypair for 'pieter'
+      openssh_keypair:
+        path: /home/pieter/.ssh/id_rsa
+        owner: pieter
+        group: pieter
+        mode: '0600'
+
+    - name: Set authorized keys for 'pieter'
+      authorized_key:
+        user: pieter
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        state: present
+
+    - name: Create user 'sjoerd'
+      user:
+        name: sjoerd
+        state: present
+      become_user: root
+
+    - name: Create .ssh directory for 'sjoerd'
+      file:
+        path: /home/sjoerd/.ssh
+        state: directory
+        owner: sjoerd
+        group: sjoerd
+        mode: '0700'
+
+    - name: Generate SSH keypair for 'sjoerd'
+      openssh_keypair:
+        path: /home/sjoerd/.ssh/id_rsa
+        owner: sjoerd
+        group: sjoerd
+        mode: '0600'
+
+    - name: Set authorized keys for 'sjoerd'
+      authorized_key:
+        user: sjoerd
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+        state: present
