@@ -1,0 +1,50 @@
+---
+- name: Wordpress configuratie
+  hosts: proxmox
+  become: yes
+  vars:
+    container_ids:
+      - 101
+      - 102
+      - 103
+      - 104
+      - 105
+      - 106
+      - 107
+      - 108
+      - 109
+      - 110
+  tasks:
+    - name: Maak containers aan
+      command: >
+        pct create {{ item }} local:vztmpl/debian-11-turnkey-wordpress_17.1-1_amd64.tar.gz
+        --rootfs local-lvm:30
+        --cores 1
+        --memory 1024
+        --net0 name=eth0,bridge=vmbr0,ip=172.16.36.100,rate=50
+      with_items: "{{ container_ids }}"
+      ignore_errors: yes
+      register: create_container_results
+
+    - name: Wachten op container
+      pause:
+        seconds: 5
+      when: false
+
+    - name: Start containers
+      command: "pct start {{ item }}"
+      with_items: "{{ container_ids }}"
+      ignore_errors: yes
+      register: start_container_results
+
+    - name: Voer fsck uit op containers
+      command: "pct fsck {{ item }}"
+      with_items: "{{ container_ids }}"
+      ignore_errors: yes
+      register: fsck_container_results
+
+    - name: Container configuratie
+      command: "pct set {{ item }} -onboot 1"
+      with_items: "{{ container_ids }}"
+      ignore_errors: yes
+      register: setup_container_results
