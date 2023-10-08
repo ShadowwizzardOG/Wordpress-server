@@ -3,9 +3,14 @@
   hosts: 172.16.36.10  # Het IP-adres van de Proxmox-node
   gather_facts: no
   become: yes
+  tasks:
+    - name: Stoppen LXC-containers
+      command: "pct stop {{ item }}"
+      with_sequence: start=101 end=110
+      ignore_errors: yes
 
   tasks:
     - name: Verwijder LXC-containers
       command: "pct destroy {{ item }}"
-      with_sequence: start=100 end=110
+      with_sequence: start=101 end=110
       ignore_errors: yes
